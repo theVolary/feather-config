@@ -47,7 +47,11 @@ exports.config = function(_options, cb) {
 
   var cmdLineOptions = {}, 
       i,
-      cmdArgs = process.argv.slice(3);
+      argIndex = process.argv.indexOf(process.mainModule.filename) + 1;
+
+  var cmdArgs = argIndex < process.argv.length ? process.argv.slice(argIndex) : process.argv;
+
+  // have to handle the environment selection up front.
   for (i = 0; i < cmdArgs.length; i++) {
     if (cmdArgs[i] === "env" && i < cmdArgs.length-1) {
       mergedOptions.useEnv = cmdArgs[i+1];
@@ -67,7 +71,7 @@ exports.config = function(_options, cb) {
 
   // Resolve environmental use.
   var error = null;
-  if (mergedOptions.useEnv) { 
+  if (mergedOptions.useEnv && mergedOptions.environments) { 
     if (mergedOptions.environments[mergedOptions.useEnv]) {
       console.info("\nUsing " + mergedOptions.useEnv + " environment");
       mergedOptions.environment = mergedOptions.useEnv;
@@ -77,7 +81,7 @@ exports.config = function(_options, cb) {
     } else if (path.existsSync(appDir + "/conf/" + mergedOptions.useEnv + ".json")) { // See if there is a conf folder with a json file with that env name.
       console.info("\nUsing " + mergedOptions.useEnv + " environment from external file.");
       var envOptions = JSON.parse(fs.readFileSync(appDir + "/conf/" + mergedOptions.useEnv + ".json", "utf-8"));
-      mergedOptions = feather.recursiveExtend(mergedOptions, envOptions);
+      mergedOptions = futil.recursiveExtend(mergedOptions, envOptions);
       delete mergedOptions.environments;
     } else {
       error = "Environment \"" + mergedOptions.useEnv + "\" does not exist in the configuration.";
@@ -85,7 +89,7 @@ exports.config = function(_options, cb) {
   }
 
   // Now finally tack on the command line overrides.
-  mergedOptions = feather.recursiveExtend(mergedOptions, cmdLineOptions);
+  mergedOptions = futil.recursiveExtend(mergedOptions, cmdLineOptions);
   if (error) {
     cb(error);
   } else {

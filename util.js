@@ -1,4 +1,4 @@
-exports = {
+module.exports = {
    /** This function should allow the original object to be extended in such a way that if the 
    * new object (n) already contains a property of the old (o) and it is an object, it delves 
    * into the old object and overrides individual properties instead of replacing the whole 
