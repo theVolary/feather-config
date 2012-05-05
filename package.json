@@ -1,0 +1,8 @@
+{
+  "name": "feather-config",
+  "version": "0.1",
+  "description": "A library useful in bootstrapping feather-like applications with a configuration environment.",
+  "author": "Steve Krenek <steve@thevolary.com>",
+  "repository": { "type": "git", "url": "git://github.com/theVolary/feather-config.git" },
+  "main": "feather-config.js"
+}
