@@ -17,7 +17,7 @@ var path = require("path"),
 
 */ 
 
-exports.config = function(_options, cb) {
+exports.init = function(_options, cb) {
 
   _options = _options || {};
   
@@ -28,6 +28,7 @@ exports.config = function(_options, cb) {
       appOptions = null;
 
   if (defaultConfFile && path.existsSync(defaultConfFile)) {
+
     defaultOptions = JSON.parse(fs.readFileSync(defaultConfFile, "utf-8"));
   }
 
@@ -48,7 +49,6 @@ exports.config = function(_options, cb) {
   var cmdLineOptions = {}, 
       i,
       argIndex = process.argv.indexOf(process.mainModule.filename) + 1;
-
   var cmdArgs = argIndex < process.argv.length ? process.argv.slice(argIndex) : process.argv;
 
   // have to handle the environment selection up front.
@@ -62,17 +62,17 @@ exports.config = function(_options, cb) {
   if (_options.commandLineArgsHook && typeof(_options.commandLineArgsHook) === "function") {
 
     var arg = cmdArgs.shift();
+    debugger;
     while (arg) {
-
-      _options.commandLineArgsHook({ arg: arg, remainingArgs: cmdArgs, options: cmdLineOptions });
+      _options.commandLineArgsHook(arg, cmdArgs, cmdLineOptions);
       arg = cmdArgs.shift();
     }
   }
 
   // Resolve environmental use.
   var error = null;
-  if (mergedOptions.useEnv && mergedOptions.environments) { 
-    if (mergedOptions.environments[mergedOptions.useEnv]) {
+  if (mergedOptions.useEnv) { 
+    if (mergedOptions.environments && mergedOptions.environments[mergedOptions.useEnv]) {
       console.info("\nUsing " + mergedOptions.useEnv + " environment");
       mergedOptions.environment = mergedOptions.useEnv;
       mergedOptions = futil.recursiveExtend(mergedOptions, mergedOptions.environments[mergedOptions.useEnv]);
@@ -96,3 +96,4 @@ exports.config = function(_options, cb) {
     cb(null, mergedOptions);
   }
 };
+
