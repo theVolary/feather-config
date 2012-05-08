@@ -104,6 +104,21 @@ describe('FeatherConfig', function() {
     });
   });
 
+  describe ("Safe get call", function() {
+    var config = {
+      'obj1': { 'obj2': { 'obj3': 42 } }
+    };
+    it('should return null if the value does not exist', function() {
+      var val = fc.get('obj1.oops.obj3', config);
+      require("should").not.exist(val);
+    });
+
+    it('should return a value', function() {
+      var val = fc.get('obj1.obj2.obj3', config);
+      val.should.equal(42);
+    });
+  });
+
 });
 
 /*

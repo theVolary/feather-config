@@ -1,6 +1,7 @@
 var path = require("path"),
     fs = require("fs"),
-    futil = require("./util");
+    futil = require("./util"),
+    ns = require("./ns");
 
 /* 
 
@@ -16,6 +17,8 @@ var path = require("path"),
 * defaultOptionsHook - function the defaultOptions are passed into in case the app wishes to augment them before proceeding.  This is called immediately after the default config file is read, and it _must_ be synchronous.
 
 */ 
+
+var _config = null;
 
 exports.init = function(_options, cb) {
 
@@ -93,7 +96,14 @@ exports.init = function(_options, cb) {
   if (error) {
     cb(error);
   } else {
+    _config = mergedOptions;
     cb(null, mergedOptions);
   }
+};
+
+exports.get = function(path, object) {
+  var obj = object || _config;
+  if (!obj) return null;
+  return ns(path, obj, true);
 };
 
