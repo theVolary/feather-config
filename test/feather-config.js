@@ -97,10 +97,38 @@ describe('FeatherConfig', function() {
                 },
           function(err, config) {
             if (err) throw err;
+            console.log(config.dumpBuildInfo());
             config.should.have.property('option-level', 'cmd');
             done();
           }
       );
+    });
+  });
+
+  describe ("Safe get call", function() {
+    fc.init({appDir: 'test', appConfigPath: 'test/internal-get-test.json'}, function(err, config) {
+
+      if (err) done(err);
+
+      it('should return null if the value does not exist', function() {
+        var val = fc.safeGet('obj1.oops.obj3', config);
+        require("should").not.exist(val);
+      });
+
+      it('should return a value', function() {
+        var val = fc.safeGet('obj1.obj2.obj3', config);
+        val.should.equal(42);
+      });
+
+      it('internal get should return null if the value does not exist', function() {
+        var val = config.safeGet('obj1.oops.obj3');
+        require("should").not.exist(val);
+      });
+
+      it('internal get should return a value', function() {
+        var val = config.safeGet('obj1.obj2.obj3');
+        val.should.equal(42);
+      });
     });
   });
 
