@@ -14,6 +14,7 @@ var path = require("path"),
 
 * appDir - The base directory to use for calculating paths.  Defaults to process.cwd()
 * defaultConfigPath - path to the default config file.  If omitted, no default config will be used.
+* appConfigPath - the path to the application's config file.  If omitted, defaults to `appDir + "/config.json"`.
 * defaultOptionsHook - function the defaultOptions are passed into in case the app wishes to augment them before proceeding.  This is called immediately after the default config file is read, and it _must_ be synchronous.
 * commandLineArgsHook - function to process individual command line arguments.  It _must_ be synchronous.
 
