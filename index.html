@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Feather-config by theVolary</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Feather-config</h1>
+        <p>Feather-based app and library configuration</p>
+        <p class="view"><a href="https://github.com/theVolary/feather-config">View the Project on GitHub <small>theVolary/feather-config</small></a></p>
+        <ul>
+          <li><a href="https://github.com/theVolary/feather-config/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/theVolary/feather-config/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/theVolary/feather-config">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>feather-config</h1>
+
+<h2>Installation</h2>
+
+<p><code>npm install git://github.com/theVolary/feather-config.git</code></p>
+
+<h2>Overview</h2>
+
+<p>feather-config is a library useful in bootstrapping feather-like applications with a configuration environment.  It provides multiple layers of inherited configuration, command-line argument support, and helper methods for safely reading configuration options.  Options specified at a particular layer override any options specified at a lower layer.  This is done in a manner so that only the properties specified are overwritten.  For example, given the following default options:</p>
+
+<pre><code>{
+  "host": "localhost",
+  "port": 80
+}
+</code></pre>
+
+<p>and the following app-level options in a file named config.json:</p>
+
+<pre><code>{
+  "host": "www.example.com"
+}
+</code></pre>
+
+<p>the resulting configuration object will look like this:</p>
+
+<pre><code>{
+  "host": "www.example.com",
+  "port": 80
+}
+</code></pre>
+
+<p>Note that the port property from the default options was not overridden.  This pattern is followed throughout the four layers of inheritance the library supports.  Those layers are, in order of evaluation:</p>
+
+<ol>
+<li> defaults</li>
+<li> application</li>
+<li> environment</li>
+<li> command line options</li>
+</ol><p>The following diagram may demonstrate the layering a little better.</p>
+
+<p><img src="https://github.com/skrenek/feather-config/raw/master/docs/inheritance_stack.png" alt="inheritance stack diagram"></p>
+
+<h2>Configuration Layers</h2>
+
+<h3>Default Options</h3>
+
+<p>This is the lowest level of options supported.  If you're not building a library, the odds are you won't use this level.  If omitted, <code>{}</code> is used.</p>
+
+<h3>App-level options</h3>
+
+<p>These options are specified at the application level.  By convention, this is a file named <code>config.json</code> stored in the root of your application's file structure.  The location of this file can be overridden.  See the API section for more info.</p>
+
+<h3>Environment-level options</h3>
+
+<p>Environment level options provide support for different environments of execution.  Most commonly you see this pattern in web frameworks where you have dev, test, and prod environments.  Environment configurations may be specified within the app-level options in the <code>environments</code> property, or in a json file in the app's <code>conf</code> folder.  In the latter case, the name of the file minus the extension is used as the name of the environment.</p>
+
+<h3>Command line options</h3>
+
+<p>The framework provides a measure of support for command line arguments, by providing a hook that will be called for each argument if the user provides a function to process them.  In this manner, the application only needs to provide the logic of what to do with each argument.  See the <code>commandLineArgsHook</code> option of the init method below for more information.</p>
+
+<h2>API</h2>
+
+<p>The library itself has just two methods:</p>
+
+<hr><h3>init(options, callback)</h3>
+
+<p>This method is used to process configuration options and call back with the final configuration options.</p>
+
+<h4>options</h4>
+
+<ul>
+<li>
+<code>appDir</code> - The base directory to use for calculating paths.  Defaults to <code>process.cwd()</code>.</li>
+<li>
+<code>defaultConfigPath</code> - path to the default config file.  If omitted, no default config will be used.</li>
+<li>
+<code>appConfigPath</code> - the path to the application's config file.  If omitted, defaults to <code>appDir + "/config.json"</code>.</li>
+<li>
+<code>defaultOptionsHook</code> - function the defaultOptions are passed into in case the app wishes to augment them before proceeding.  This is called immediately after the default config file is read, and it <em>must</em> be synchronous.</li>
+<li>
+<code>commandLineArgsHook</code> - function to process individual command line arguments.  It <em>must</em> be synchronous. 
+#### args
+
+<ul>
+<li>arg - the current arg being processed</li>
+<li>remainingArgs - the remainder of the arguments array that follows arg.</li>
+<li>cmdLineOptions - the command line options object the function should modify.</li>
+</ul>
+</li>
+</ul><h4>callback parameters</h4>
+
+<p>The callback parameters follow the standard nodejs err, result pattern.</p>
+
+<ul>
+<li>
+<code>err</code> - null unless an error occurred</li>
+<li>
+<code>config</code> - the resulting configured options</li>
+</ul><p>The resulting config object returned in init's callback also contains two utility methods:</p>
+
+<ul>
+<li>
+<code>safeGet(path)</code> - identical to the library-level safeGet below, but acts only on the config object.</li>
+<li>
+<code>dumpBuildInfo()</code> - purely a debug method useful for seeing the levels of inheritance that were followed while constructing the configuration options.  It returns a string.</li>
+</ul><hr><h3>safeGet(path, object)</h3>
+
+<p>This is a utility method to safely retrieve values from the given object without throwing undefined errors if any property in the path does not exist (null-safe get).  If any of the properties in the path variable are not defined, the method returns <code>null</code>.</p>
+
+<h4>parameters</h4>
+
+<ul>
+<li>
+<code>path</code> - The dot-notation path string inside the object that you wish to retrieve.  For example, <code>"user.profile.address.city"</code>.</li>
+<li>
+<code>object</code> - the object to <em>get</em> from.</li>
+</ul><hr><h2>Examples</h2>
+
+<p>Typical usage is as follows:</p>
+
+<pre><code>var fConf = require("feather-config");
+
+fConf.init({}, function(err, config) {
+  ...
+});
+</code></pre>
+
+<p>Full usage with all options looks something like this:</p>
+
+<pre><code>var fConf = require("feather-config");
+
+var confOpts = {
+  defaultConfigPath: 'lib/defaults.json',
+  defaultOptionsHook: function(defaultOptions) {
+    defaultOptions.someRuntimeOption = process.env.MY_VAR;
+  },
+  appConfigPath: 'myapp.json',
+  commandLineArgsHook: function(arg, remainingArgs, cmdLineOptions) {
+    if (arg === 'sweetOption') {
+      cmdLineOptions.sweetOption = remainingArgs.shift();
+    }
+  }
+};
+
+fConf.init(confOpts, function(err, config) {
+  if (err) {
+    ...
+  } else {
+    var myVal = config.safeGet('some.nested.property');
+  }
+});
+</code></pre>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/theVolary">theVolary</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-31577476-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
