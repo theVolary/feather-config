@@ -30,7 +30,7 @@ Note that the port property from the default options was not overridden.  This p
 
 The following diagram may demonstrate the layering a little better.
 
-![inheritance stack diagram](docs/inheritance_stack.png)
+![inheritance stack diagram](https://github.com/skrenek/feather-config/raw/master/docs/inheritance_stack.png)
 
 ## Configuration Layers
 
