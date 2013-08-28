@@ -1,7 +1,7 @@
 # feather-config
 
 ## Installation
-`npm install git://github.com/theVolary/feather-config.git`
+`npm install git+ssh://github.com/theVolary/feather-config.git`
 
 ## Overview
 feather-config is a library useful in bootstrapping feather-like applications with a configuration environment.  It provides multiple layers of inherited configuration, command-line argument support, and helper methods for safely reading configuration options.  Options specified at a particular layer override any options specified at a lower layer.  This is done in a manner so that only the properties specified are overwritten.  For example, given the following default options:
