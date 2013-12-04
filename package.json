@@ -1,6 +1,6 @@
 {
   "name": "feather-config",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A library useful in bootstrapping feather-like applications with a configuration environment.",
   "author": "Steve Krenek <steve@thevolary.com>",
   "repository": { "type": "git", "url": "git://github.com/theVolary/feather-config.git" },
@@ -11,5 +11,16 @@
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha"
-  }
+  },
+  "homepage": "http://thevolary.github.io/feather-config/",
+  "bugs": {
+    "url": "https://github.com/theVolary/feather-config/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "config",
+    "configuration",
+    "env",
+    "environment"
+  ]
 }
