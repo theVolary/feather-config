@@ -3,7 +3,7 @@ var path = require("path"),
     futil = require("./lib/util"),
     ns = require("./lib/ns");
 
-/* 
+/*
 
 ## Conventions used in this module
 
@@ -18,11 +18,11 @@ var path = require("path"),
 * defaultOptionsHook - function the defaultOptions are passed into in case the app wishes to augment them before proceeding.  This is called immediately after the default config file is read, and it _must_ be synchronous.
 * commandLineArgsHook - function to process individual command line arguments.  It _must_ be synchronous.
 
-*/ 
+*/
 exports.init = function(_options, cb) {
 
   _options = _options || {};
-  
+
   var appDir = _options.appDir || process.cwd(),
       defaultConfFile = _options.defaultConfigPath || null,
       appConfFile = _options.appConfigPath || (appDir + "/config.json"),
@@ -51,7 +51,11 @@ exports.init = function(_options, cb) {
     mergedOptions = futil.recursiveExtend(mergedOptions, appOptions);
   }
 
-  var cmdLineOptions = {}, 
+  if (_options.useEnv && !mergedOptions.useEnv) {
+    mergedOptions.useEnv = _options.useEnv;
+  }
+
+  var cmdLineOptions = {},
       i,
       argIndex = process.argv.indexOf(process.mainModule.filename) + 1;
   var cmdArgs = argIndex < process.argv.length ? process.argv.slice(argIndex) : process.argv,
@@ -67,7 +71,7 @@ exports.init = function(_options, cb) {
 
   // Resolve environmental use.
   var error = null;
-  if (mergedOptions.useEnv) { 
+  if (mergedOptions.useEnv) {
     if (mergedOptions.environments && mergedOptions.environments[mergedOptions.useEnv]) {
       //console.info("\nUsing " + mergedOptions.useEnv + " environment");
       mergedOptions.environment = mergedOptions.useEnv;
@@ -119,4 +123,3 @@ exports.init = function(_options, cb) {
 exports.safeGet = function(path, object) {
   return ns(path, object, true);
 };
-
