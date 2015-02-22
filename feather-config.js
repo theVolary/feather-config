@@ -30,7 +30,7 @@ exports.init = function(_options, cb) {
       appOptions = null,
       _breadcrumb = [];
 
-  if (defaultConfFile && path.existsSync(defaultConfFile)) {
+  if (defaultConfFile && fs.existsSync(defaultConfFile)) {
     defaultOptions = JSON.parse(fs.readFileSync(defaultConfFile, "utf-8"));
     _breadcrumb.push("Default options from " + defaultConfFile);
   }
@@ -40,7 +40,7 @@ exports.init = function(_options, cb) {
     _breadcrumb.push("Default hook used");
   }
 
-  if (path.existsSync(appConfFile)) {
+  if (fs.existsSync(appConfFile)) {
     appOptions = JSON.parse(fs.readFileSync(appConfFile, "utf-8"));
     _breadcrumb.push("App options from " + appConfFile);
   }
@@ -79,7 +79,7 @@ exports.init = function(_options, cb) {
       delete mergedOptions.environments;
       _breadcrumb.push("App config env " + mergedOptions.environment);
 
-    } else if (path.existsSync(appDir + "/conf/" + mergedOptions.useEnv + ".json")) { // See if there is a conf folder with a json file with that env name.
+    } else if (fs.existsSync(appDir + "/conf/" + mergedOptions.useEnv + ".json")) { // See if there is a conf folder with a json file with that env name.
       //console.info("\nUsing " + mergedOptions.useEnv + " environment from external file.");
       var filename = appDir + "/conf/" + mergedOptions.useEnv + ".json",
           envOptions = JSON.parse(fs.readFileSync(filename, "utf-8"));
